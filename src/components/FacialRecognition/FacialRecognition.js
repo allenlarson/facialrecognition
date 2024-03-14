@@ -3,7 +3,7 @@ import React from 'react';
 const FacialRecognition = ({ imageURL }) => {
   return (
     <div className="mt-4">
-      <img alt="" src={imageURL} width="500px" height="auto" />
+      <img id="inputimage" alt="" src={imageURL} width="500px" height="auto" />
     </div>
   );
 };

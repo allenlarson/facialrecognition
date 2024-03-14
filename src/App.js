@@ -11,6 +11,7 @@ import FacialRecognition from './components/FacialRecognition/FacialRecognition'
 function App() {
   const [input, setInput] = useState('');
   const [image, setImage] = useState('');
+  const [box, setBox] = useState({});
 
   const PAT = '0fea6ae36240497297b74b6c9f9b5085';
   // Specify the correct user_id/app_id pairings
@@ -51,41 +52,41 @@ function App() {
     setInput(e.target.value);
   };
 
-  const onButtonSubmit = () => {
-    setImage(input);
-
-    fetch(
+  async function fetchData() {
+    const response = await fetch(
       'https://api.clarifai.com/v2/models/' +
         MODEL_ID +
         '/versions/' +
         MODEL_VERSION_ID +
         '/outputs',
       requestOptions
-    )
-      .then(response => response.json())
-      .then(result => {
-        const regions = result.outputs[0].data.regions;
+    );
+    const data = await response.json();
+    const locations = data.outputs[0].data.regions[0].region_info.bounding_box;
+    calculateFaceLocation(locations);
+  }
+  const calculateFaceLocation = async data => {
+    const clarifaiFace = data;
+    const image = document.getElementById('inputimage');
+    const width = await Number(image.width);
+    const height = await Number(image.height);
+    console.log(width, height, clarifaiFace);
+    return {
+      leftCol: clarifaiFace.left_col * width,
+      topRow: clarifaiFace.top_row * height,
+      rightCol: width - clarifaiFace.right_col * width,
+      bottomRow: height - clarifaiFace.bottom_row * height,
+    };
+  };
 
-        regions.forEach(region => {
-          // Accessing and rounding the bounding box values
-          const boundingBox = region.region_info.bounding_box;
-          const topRow = boundingBox.top_row.toFixed(3);
-          const leftCol = boundingBox.left_col.toFixed(3);
-          const bottomRow = boundingBox.bottom_row.toFixed(3);
-          const rightCol = boundingBox.right_col.toFixed(3);
+  const onButtonSubmit = () => {
+    setImage(input);
+    fetchData();
+    setBox(box);
+  };
 
-          region.data.concepts.forEach(concept => {
-            // Accessing and rounding the concept value
-            const name = concept.name;
-            const value = concept.value.toFixed(4);
-
-            console.log(
-              `${name}: ${value} BBox: ${topRow}, ${leftCol}, ${bottomRow}, ${rightCol}`
-            );
-          });
-        });
-      })
-      .catch(error => console.log('error', error));
+  const displayFaceBox = box => {
+    setBox(box);
   };
 
   return (

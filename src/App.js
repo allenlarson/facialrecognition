@@ -65,30 +65,24 @@ function App() {
     const locations = data.outputs[0].data.regions[0].region_info.bounding_box;
     calculateFaceLocation(locations);
   }
+
   const calculateFaceLocation = async data => {
-    const clarifaiFace = data;
     const image = document.getElementById('inputimage');
-    const width = await Number(image.width);
-    const height = await Number(image.height);
-    console.log(width, height, clarifaiFace);
-    return {
+    const width = Number(image.width);
+    const height = Number(image.height);
+    const clarifaiFace = await data;
+    setBox({
       leftCol: clarifaiFace.left_col * width,
       topRow: clarifaiFace.top_row * height,
       rightCol: width - clarifaiFace.right_col * width,
       bottomRow: height - clarifaiFace.bottom_row * height,
-    };
+    });
   };
 
   const onButtonSubmit = () => {
     setImage(input);
     fetchData();
-    setBox(box);
   };
-
-  const displayFaceBox = box => {
-    setBox(box);
-  };
-
   return (
     <div className="w-full flex flex-col h-screen content-center justify-center">
       <ParticlesBg color="#e4e4e4" type="cobweb" bg={true} />
@@ -102,7 +96,7 @@ function App() {
           onInputChange={onInputChange}
           onButtonSubmit={onButtonSubmit}
         />
-        <FacialRecognition imageURL={IMAGE_URL} />
+        <FacialRecognition box={box} imageURL={IMAGE_URL} />
       </div>
     </div>
   );

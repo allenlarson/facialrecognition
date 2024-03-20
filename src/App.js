@@ -7,6 +7,7 @@ import Rank from './components/Rank/Rank';
 
 import ParticlesBg from 'particles-bg';
 import FacialRecognition from './components/FacialRecognition/FacialRecognition';
+import Signin from './components/Signin/Signin';
 
 function App() {
   const [input, setInput] = useState('');
@@ -91,6 +92,7 @@ function App() {
         <Navigation />
       </div>
       <div className="flex flex-col gap-5 items-center h-full content-center justify-center">
+        <Signin />
         <Rank />
         <ImageLinkForm
           onInputChange={onInputChange}
